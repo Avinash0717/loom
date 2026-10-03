@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 
 import Login from "./Login";
 import Register from "./Register";
-import WorkspaceHandler from "../../workspace/WorkspaceHandler";
+import PromptPage from "../prompt/PromptPage";
+import CanvasPage from "../canvas/CanvasPage";
 
 import { heartbeat } from "../../services/authApi";
 
 type AuthView = "login" | "register";
+type AppView = "prompt" | "canvas";
 
 export default function AuthHandler() {
     const [authenticated, setAuthenticated] = useState(
@@ -14,6 +16,8 @@ export default function AuthHandler() {
     );
 
     const [authView, setAuthView] = useState<AuthView>("login");
+
+    const [appView, setAppView] = useState<AppView>("prompt");
 
     useEffect(() => {
         if (!authenticated) {
@@ -36,11 +40,31 @@ export default function AuthHandler() {
     }, [authenticated]);
 
     if (authenticated) {
+        if (appView === "canvas") {
+            return (
+                <CanvasPage
+                    onHome={() => {
+                        setAppView("prompt");
+                    }}
+                    onLogout={() => {
+                        setAuthenticated(false);
+                        setAuthView("login");
+                        setAppView("prompt");
+                    }}
+                />
+            );
+        }
+
         return (
-            <WorkspaceHandler
+            <PromptPage
+                onSend={(prompt) => {
+                    console.log("Prompt:", prompt);
+                    setAppView("canvas");
+                }}
                 onLogout={() => {
                     setAuthenticated(false);
                     setAuthView("login");
+                    setAppView("prompt");
                 }}
             />
         );
@@ -52,6 +76,7 @@ export default function AuthHandler() {
                 onRegistered={(token) => {
                     localStorage.setItem("loom_token", token);
                     setAuthenticated(true);
+                    setAppView("prompt");
                 }}
                 onBackToLogin={() => {
                     setAuthView("login");
@@ -64,6 +89,7 @@ export default function AuthHandler() {
         <Login
             onLogin={() => {
                 setAuthenticated(true);
+                setAppView("prompt");
             }}
             onRegister={() => {
                 setAuthView("register");
