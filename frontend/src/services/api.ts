@@ -46,4 +46,18 @@ export const api = {
       body: JSON.stringify(data),
     });
   },
+
+  delete<T>(endpoint: string) {
+    return request<T>(endpoint, {
+      method: "DELETE",
+    });
+  },
+
+  patch<T>(endpoint: string, data: unknown) {
+    return request<T>(endpoint, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+  },
 };
+

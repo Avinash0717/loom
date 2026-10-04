@@ -1,5 +1,6 @@
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, DateTime, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
+from datetime import datetime, timezone
 
 from app.db.database import Base
 
@@ -25,6 +26,18 @@ class User(Base):
     password: Mapped[str] = mapped_column(
         String(255),
         nullable=False
+    )
+
+    is_active: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=True
+    )
+
+    deleted_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+        default=None
     )
 
     active_workspace_id: Mapped[str] = mapped_column(

@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { logout } from "../../services/authApi";
+import { createCanvas } from "../../services/canvasApi";
+
+import type { CanvasResponse } from "../../services/canvasApi";
 
 interface PromptPageProps {
-    onSend: (prompt: string) => void;
+    onSend: (canvas: CanvasResponse) => void;
     onLogout: () => void;
 }
 
@@ -23,14 +26,19 @@ export default function PromptPage({
         }
     }
 
-    function handleSend() {
+    async function handleSend() {
         const trimmedPrompt = prompt.trim();
 
         if (!trimmedPrompt) {
             return;
         }
 
-        onSend(trimmedPrompt);
+        try {
+            const canvas = await createCanvas(trimmedPrompt);
+            onSend(canvas);
+        } catch (error) {
+            console.error("Failed to create canvas:", error);
+        }
     }
 
     return (
